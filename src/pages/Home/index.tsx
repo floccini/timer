@@ -12,13 +12,26 @@ const newCycleFormValidationSchema = zod.object({
     .max(60, 'O ciclo precisa ser de no máximo 60 minutos.'),
 })
 
+type NewCycleFormData = zod.infer<typeof newCycleFormValidationSchema> 
+
+/*
+    Cria uma tipagem a partir dos valores bases dentro do Schema de Validation com a função infer do zod.
+
+    Typeof necessário pois o tipo sendo criado é em TS, porém o const utilizado é JS.
+
+*/
+
 export function Home() {
 
-    const { register, handleSubmit, watch } = useForm({
-        resolver: zodResolver(newCycleFormValidationSchema)
+    const { register, handleSubmit, watch } = useForm<NewCycleFormData>({
+        resolver: zodResolver(newCycleFormValidationSchema),
+        defaultValues: {
+            task: '',
+            minutesAmount: 0,
+        }
     });
 
-    function handleCreateNewCycle(data: any) {
+    function handleCreateNewCycle(data: NewCycleFormData) {
         console.log(data);
     }
 
