@@ -1,7 +1,7 @@
 # Timer
 ## Dependencies installation
 
-To install all the dependencies needed, run the following command on your terminal:
+To install all the dependencies needed, run the following command on your terminal after cloning it to your computer:
 
 ```
 npm i
