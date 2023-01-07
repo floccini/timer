@@ -56,13 +56,19 @@ export function Home() {
   const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId); //Procura se o ciclo atual é o ciclo ativo dentro do vetor de Cycles
 
   useEffect(() => {
+    let interval: number;
+
     if (activeCycle) {
-      setInterval(() => {
+      const interval = setInterval(() => {
         setAmountSecondsPassed(
           differenceInSeconds(new Date(), activeCycle.startDate) //Calcula a diferença em segundos da data atual com a data de quando o ciclo foi iniciado
         );
       }, 1000);
     }
+
+    return () => {
+      clearInterval(interval);
+    };
   }, [activeCycle]);
 
   function handleCreateNewCycle(data: NewCycleFormData) {
