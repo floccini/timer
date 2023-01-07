@@ -85,6 +85,8 @@ export function Home() {
 
     setActiveCycleId(id);
 
+    setAmountSecondsPassed(0);
+
     reset(); // Retorna os valores do form para o defaultValues
   }
 
