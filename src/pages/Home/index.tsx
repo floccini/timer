@@ -38,6 +38,7 @@ interface Cycle {
   minutesAmount: number;
   startDate: Date;
   interruptedDate?: Date;
+  finishedDate?: Date;
 }
 
 export function Home() {
@@ -57,21 +58,49 @@ export function Home() {
 
   const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId); //Procura se o ciclo atual é o ciclo ativo dentro do vetor de Cycles
 
+  const totalSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0; //Verifica se o clico está ativo, e transforma os minutos inseridos em segundos
+
+  /* 
+    useEffect que calcula a diferença de segundos
+  */
+
   useEffect(() => {
     let interval: number;
 
     if (activeCycle) {
       interval = setInterval(() => {
-        setAmountSecondsPassed(
-          differenceInSeconds(new Date(), activeCycle.startDate) //Calcula a diferença em segundos da data atual com a data de quando o ciclo foi iniciado
+        //Calcula a diferença em segundos da data atual com a data de quando o ciclo foi iniciado
+
+        const secondsDifference = differenceInSeconds(
+          new Date(),
+          activeCycle.startDate
         );
+
+        if (secondsDifference >= totalSeconds) {
+          //Verifica se o total de segundos percorrido é igual ou maior que o total do ciclo - Implica que o ciclo finalizou
+          setCycles((state) =>
+            state.map((cycle) => {
+              if (cycle.id === activeCycleId) {
+                return { ...cycle, finishedDate: new Date() };
+              } else {
+                return cycle;
+              }
+            })
+          );
+
+          setAmountSecondsPassed(totalSeconds);
+          clearInterval(interval);
+          setActiveCycleId(null);
+        } else {
+          setAmountSecondsPassed(secondsDifference);
+        }
       }, 1000);
     }
 
     return () => {
       clearInterval(interval);
     };
-  }, [activeCycle]);
+  }, [activeCycle, totalSeconds, activeCycleId]);
 
   function handleCreateNewCycle(data: NewCycleFormData) {
     const id = String(new Date().getTime());
@@ -93,8 +122,8 @@ export function Home() {
   }
 
   function handleInterruptCycle() {
-    setCycles(
-      cycles.map((cycle) => {
+    setCycles((state) =>
+      state.map((cycle) => {
         if (cycle.id === activeCycleId) {
           return { ...cycle, interruptedDate: new Date() }; //Percorre por todos os ciclos guardados e adiciona a data em que foi interrompido no ciclo atual
         } else {
@@ -106,8 +135,6 @@ export function Home() {
     setActiveCycleId(null);
   }
 
-  const totalSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0; //Verifica se o clico está ativo, e transforma os minutos inseridos em segundos
-
   const currentSeconds = activeCycle ? totalSeconds - amountSecondsPassed : 0; // Calcula quantos segundos restam
 
   const minutesAmount = Math.floor(currentSeconds / 60); //Calcula o número de minutos dentro dos segundos restantes e arredonda pra baixo
@@ -117,16 +144,20 @@ export function Home() {
   const minutes = String(minutesAmount).padStart(2, "0"); //Define quantos caracteres essa string deve ter, e caso não tenha o número definido, adiciona 0 no começo
   const seconds = String(secondsAmount).padStart(2, "0");
 
+  /* 
+    useEffect que altera o titulo da página
+  */
+
   useEffect(() => {
     if (activeCycle) {
       document.title = `${minutes}:${seconds}`;
+    } else {
+      document.title = "Ignite Timer";
     }
   }, [minutes, seconds, activeCycle]);
 
   const task = watch("task");
   const isSubmitDisabled = !task;
-
-  console.log(cycles);
 
   return (
     <HomeContainer>
