@@ -37,6 +37,7 @@ interface Cycle {
   task: string;
   minutesAmount: number;
   startDate: Date;
+  interruptedDate?: Date;
 }
 
 export function Home() {
@@ -91,6 +92,20 @@ export function Home() {
     reset(); // Retorna os valores do form para o defaultValues
   }
 
+  function handleInterruptCycle() {
+    setCycles(
+      cycles.map((cycle) => {
+        if (cycle.id === activeCycleId) {
+          return { ...cycle, interruptedDate: new Date() }; //Percorre por todos os ciclos guardados e adiciona a data em que foi interrompido no ciclo atual
+        } else {
+          return cycle;
+        }
+      })
+    );
+
+    setActiveCycleId(null);
+  }
+
   const totalSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0; //Verifica se o clico está ativo, e transforma os minutos inseridos em segundos
 
   const currentSeconds = activeCycle ? totalSeconds - amountSecondsPassed : 0; // Calcula quantos segundos restam
@@ -111,6 +126,8 @@ export function Home() {
   const task = watch("task");
   const isSubmitDisabled = !task;
 
+  console.log(cycles);
+
   return (
     <HomeContainer>
       <form action="" onSubmit={handleSubmit(handleCreateNewCycle)}>
@@ -120,6 +137,7 @@ export function Home() {
             id="task"
             placeholder="Dê um nome para o seu projeto"
             list="task-suggestions"
+            disabled={!!activeCycle}
             {...register("task")}
           />
 
@@ -137,6 +155,7 @@ export function Home() {
             step={5}
             min={5}
             max={60}
+            disabled={!!activeCycle}
             {...register("minutesAmount", { valueAsNumber: true })}
           />
 
@@ -152,7 +171,7 @@ export function Home() {
         </CountdownContainer>
 
         {activeCycle ? (
-          <StopCountdownButton type="button">
+          <StopCountdownButton onClick={handleInterruptCycle} type="button">
             <HandPalm size={24} />
             Interromper
           </StopCountdownButton>
