@@ -9,7 +9,7 @@ npm i
 
 ## Running the application
 
-this project runs locally on your machine, run the following command to start hosting it locally
+This project runs locally on your machine, run the following command to start hosting it locally
 
 ```
 npm run dev
