@@ -59,7 +59,7 @@ export function Home() {
     let interval: number;
 
     if (activeCycle) {
-      const interval = setInterval(() => {
+      interval = setInterval(() => {
         setAmountSecondsPassed(
           differenceInSeconds(new Date(), activeCycle.startDate) //Calcula a diferença em segundos da data atual com a data de quando o ciclo foi iniciado
         );
