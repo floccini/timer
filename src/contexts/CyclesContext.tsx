@@ -75,8 +75,6 @@ export function CyclesContextProvider({
     setActiveCycleId(id);
 
     setAmountSecondsPassed(0);
-
-    //reset();  Retorna os valores do form para o defaultValues
   }
 
   function interruptCurrentCycle() {
